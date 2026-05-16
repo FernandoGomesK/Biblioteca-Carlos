@@ -1,6 +1,8 @@
 # Nome dos integrantes
 Fernando Gomes dos Santos
-inácio Ribeiro Azevedo
+
+Inácio Ribeiro Azevedo
+
 Pedro Henrique Amorim Borges
 # Projeto Escolhido
 Biblioteca
