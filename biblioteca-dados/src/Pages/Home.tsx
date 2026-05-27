@@ -1,17 +1,19 @@
 import { useState } from 'react';
-import axios from 'axios';
+import { apiMock } from '../services/Api';
+
 
 function Home() {
     
-    const [livros, setLivros] = useState([]);
+    const [livros, setLivros] = useState<{ titulo: string; autor: string }[]>([]);
     const [tituloInput, setTituloInput] = useState('');
     const [autorInput, setAutorInput] = useState('');
 
-    const apiUrl = 'URL_DO_BACKEND_AQUI'; 
+    
 
     const mostrarLivros = async () => {
         try {
-            const resposta = await axios.get(`${apiUrl}/livros`);
+            
+            const resposta: { data: { titulo: string; autor: string }[] } = await apiMock.getLivros();
             setLivros(resposta.data); 
         } catch (erro) {
             console.error("Erro ao buscar livros:", erro);
@@ -19,22 +21,17 @@ function Home() {
     };
 
     const adicionarLivro = async () => {
-    
         if (!tituloInput || !autorInput) {
             alert("Por favor, preencha o nome e o autor do livro.");
             return;
         }
 
-        
-        const novoLivro = {
-            titulo: tituloInput,
-            autor: autorInput
-        };
+        const novoLivro = { titulo: tituloInput, autor: autorInput };
 
         try {
-            await axios.post(`${apiUrl}/livros`, novoLivro);
+            // Substitui o axios por apiMock.postLivro()
+            await apiMock.postLivro(novoLivro);
             alert("Livro adicionado com sucesso!");
-            
             
             setTituloInput('');
             setAutorInput('');
