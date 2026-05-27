@@ -29,46 +29,55 @@ function Home() {
         const novoLivro = { titulo: tituloInput, autor: autorInput };
 
         try {
-            // Substitui o axios por apiMock.postLivro()
+            
             await apiMock.postLivro(novoLivro);
             alert("Livro adicionado com sucesso!");
             
             setTituloInput('');
             setAutorInput('');
             
-            mostrarLivros(); 
+            
         } catch (erro) {
             console.error("Erro ao adicionar livro:", erro);
         }
     };
 
     return (
-        <div className="min-h-screen bg-[#1e1e1e] text-white p-8">
+        <div className="min-h-screen bg-[#1e1e1e] text-white p-8 flex items-center flex-col">
+
+            {/* Menu de Adicionar livros */}
+
+            
             <h1 className="text-2xl font-bold mb-6">Home</h1>
 
             
-            <div className="flex flex-col sm:flex-row gap-4 mb-6">
-                <input 
-                    value={tituloInput}
-                    onChange={(e) => setTituloInput(e.target.value)}
-                    placeholder='Nome do livro' 
-                    className="p-2 bg-[#2b2b2b] border border-gray-600 rounded-lg focus:outline-none focus:border-gray-400"
-                />
-                <input 
-                    value={autorInput}
-                    onChange={(e) => setAutorInput(e.target.value)}
-                    placeholder='Autor do livro' 
-                    className="p-2 bg-[#2b2b2b] border border-gray-600 rounded-lg focus:outline-none focus:border-gray-400"
-                />
-            </div>
+            <div className="flex flex-col gap-4 mb-6 rounded-2xl border border-gray-600 p-4 w-full max-w-md">
+    
+            <input 
+                value={tituloInput}
+                onChange={(e) => setTituloInput(e.target.value)}
+                placeholder='Nome do livro' 
+                className="w-full p-2 bg-[#2b2b2b] border border-gray-600 rounded-lg focus:outline-none focus:border-gray-400"
+            />
+            
+            <input 
+                value={autorInput}
+                onChange={(e) => setAutorInput(e.target.value)}
+                placeholder='Autor do livro' 
+                className="w-full p-2 bg-[#2b2b2b] border border-gray-600 rounded-lg focus:outline-none focus:border-gray-400"
+            />
 
-            <div className="flex gap-4 mb-8">
-                <button 
+            <button 
                     onClick={adicionarLivro}
                     className="flex justify-center px-4 py-2 bg-[#2b2b2b] hover:bg-[#2d2e2d] border-2 rounded-lg border-gray-500 transition-colors"
                 >
                     Adicionar livro
                 </button>
+            
+        </div>
+
+            <div className="flex gap-4 mb-8">
+                
 
                 <button 
                     onClick={mostrarLivros}
