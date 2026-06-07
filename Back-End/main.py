@@ -90,3 +90,70 @@ async def ver_perfil(current_user: UserData = Depends(get_current_user)):
         "usuario": current_user.username,
         "tipo_conta": current_user.role
     }
+
+# ---------------------------------------------------------
+# ROTA DO BIBLIOTECÁRIO: Registrar Empréstimo
+# ---------------------------------------------------------
+@app.post("/emprestimos/registrar", response_model=EmprestimoResponse)
+async def registrar_emprestimo(dados: EmprestimoCreate, current_user: UserData = Depends(get_current_user)):
+    global emprestimo_id_counter
+    
+    # 1. Regra de Negócio: Apenas bibliotecários podem executar essa ação
+    if current_user.role != "bibliotecario":
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN, 
+            detail="Acesso negado. Apenas bibliotecários podem realizar empréstimos."
+        )
+    
+    # 2. Validação: O usuário leitor existe no sistema?
+    if dados.username_leitor not in fake_db:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND, 
+            detail="Usuário leitor não encontrado."
+        )
+        
+    # 3. Validação: O livro existe e está disponível?
+    livro = fake_books_db.get(dados.id_livro)
+    if not livro:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND, 
+            detail="Livro não encontrado."
+        )
+    if not livro["disponivel"]:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST, 
+            detail="Este livro já está emprestado no momento."
+        )
+        
+    # 4. Processamento: Criação do registro de empréstimo (Prazo de 14 dias)
+    novo_emprestimo = {
+        "id": emprestimo_id_counter,
+        "username_leitor": dados.username_leitor,
+        "id_livro": dados.id_livro,
+        "titulo_livro": livro["titulo"],
+        "data_emprestimo": date.today(),
+        "data_devolucao": date.today() + timedelta(days=14),
+        "status": "ativo"
+    }
+    
+    # Atualiza o estado do livro para indisponível
+    livro["disponivel"] = False
+    
+    # Salva no banco simulado
+    fake_emprestimos_db.append(novo_emprestimo)
+    emprestimo_id_counter += 1
+    
+    return novo_emprestimo
+
+# ---------------------------------------------------------
+# ROTA DO USUÁRIO COMUM: Visualizar Meus Empréstimos
+# ---------------------------------------------------------
+@app.get("/emprestimos/meus", response_model=List[EmprestimoResponse])
+async def listar_meus_emprestimos(current_user: UserData = Depends(get_current_user)):
+    # Qualquer usuário logado pode acessar essa rota, mas ele SÓ vê os registros dele.
+    # Filtramos a lista comparando o username_leitor com o 'sub' extraído do token (current_user.username)
+    meus_emprestimos = [
+        emp for emp in fake_emprestimos_db if emp["username_leitor"] == current_user.username
+    ]
+    
+    return meus_emprestimos
