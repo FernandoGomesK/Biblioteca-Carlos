@@ -2,7 +2,9 @@ from fastapi import FastAPI, Depends, HTTPException, status
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.security import OAuth2PasswordRequestForm
 from auth import verify_password, create_access_token, get_current_user, get_password_hash
-from models import Token, UserData
+from models import Token, UserData, EmprestimoCreate, EmprestimoResponse
+from datetime import date, timedelta
+from typing import List
 
 app = FastAPI(title="API Biblioteca")
 
