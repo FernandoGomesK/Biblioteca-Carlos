@@ -31,6 +31,17 @@ fake_db = {
     }
 }
 
+# Banco de dados simulado de livros
+fake_books_db = {
+    1: {"id": 1, "titulo": "O Senhor dos Anéis", "disponivel": True},
+    2: {"id": 2, "titulo": "Cálculo I", "disponivel": True},
+    3: {"id": 3, "titulo": "Python Fluente", "disponivel": True}
+}
+
+# Lista que guardará os históricos de empréstimos
+fake_emprestimos_db = []
+emprestimo_id_counter = 1
+
 # ---------------------------------------------------------
 # ENDPOINT 1: O Login (Gera o Token)
 # ---------------------------------------------------------
