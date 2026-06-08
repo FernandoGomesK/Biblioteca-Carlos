@@ -90,9 +90,10 @@ export default function LendBookModal({
             alert("Empréstimo registrado com sucesso!");
             onSuccess(); 
             onClose();   
-        } catch (erro: any) {
+        } catch (erro: unknown) {
             console.error(erro);
-            alert(erro.message || "Falha ao registrar empréstimo.");
+            const mensagemErro = erro instanceof Error ? erro.message : String(erro);
+            alert(mensagemErro || "Falha ao registrar empréstimo.");
         }
     };
 
