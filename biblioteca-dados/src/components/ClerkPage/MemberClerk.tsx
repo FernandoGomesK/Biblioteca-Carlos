@@ -4,7 +4,7 @@ import SearchBook from './searchBook';
 import { useState } from 'react';
 import AddBookModal from './addBookModal';
 
-function MainClerk() {
+function MemberClerk() {
     // Injeta a lógica inteira de controlo de livros numa linha
     const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
     const {
@@ -75,7 +75,6 @@ function MainClerk() {
                                             <span className={`px-2 py-1 rounded text-xs font-semibold ${livro.disponivel ? "bg-green-900/50 text-green-400 border border-green-700" : "bg-red-900/50 text-red-400 border border-red-700"}`}>
                                                 {livro.disponivel ? "Disponível" : "Emprestado"}
                                             </span>
-                                            <button>Registrar Empréstimo</button>
                                         </div>
                                     </li>
                                 ))}
@@ -105,4 +104,4 @@ function MainClerk() {
     );
 }
 
-export default MainClerk;
+export default MemberClerk;

@@ -14,6 +14,7 @@ import UserDashboard from './Pages/userDashboard';
 
 import './App.css';
 import ClerkBase from './Pages/Clerk';
+import SeeMembers from './Pages/SeeMembers';
 
 function App() {
   return (
@@ -25,6 +26,7 @@ function App() {
           <Route path="/" element={<HomePage />} />
           <Route path="/login" element={<LoginPage />} />
           <Route path="/seebooks" element={<SeeBooks />} /> 
+          <Route path='/members' element={<SeeMembers/>} />
         </Route>
 
         {/* Rota exclusiva e avulsa para a Área do Usuário Comum/Leitor */}
