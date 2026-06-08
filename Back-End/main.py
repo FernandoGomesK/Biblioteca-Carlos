@@ -5,13 +5,14 @@ from auth import verify_password, create_access_token, get_current_user, get_pas
 from models import Token, UserData, EmprestimoCreate, EmprestimoResponse
 from datetime import date, timedelta
 from typing import List
+from pydantic import BaseModel # Certifique-se de que o BaseModel está importado
 
 app = FastAPI(title="API Biblioteca")
 
 # Libera o CORS para quando você for conectar o React depois
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"], # Na hora de colocar no ar, troque "*" pelo endereço do seu front-end
+    allow_origins=["*"], 
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -66,25 +67,43 @@ async def login(form_data: OAuth2PasswordRequestForm = Depends()):
     return {"access_token": access_token, "token_type": "bearer"}
 
 # ---------------------------------------------------------
-# ENDPOINT 2: Rota Exclusiva do Bibliotecário
+# ENDPOINT 2: Rota Exclusiva do Bibliotecário (CORRIGIDO)
 # ---------------------------------------------------------
+# Modelo para receber e validar os dados enviados pelo corpo (JSON) da requisição
+class LivroCreate(BaseModel):
+    id: int
+    titulo: str # Corrigido de 'string' para 'str'
+
 @app.post("/livros/cadastrar")
-async def cadastrar_livro(current_user: UserData = Depends(get_current_user)):
+async def cadastrar_livro(dados: LivroCreate, current_user: UserData = Depends(get_current_user)):
     # Trava de segurança da role
     if current_user.role != "bibliotecario":
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN, 
             detail="Ação permitida apenas para bibliotecários."
         )
+    
+    # Validação: impede o cadastro duplicado de IDs no dicionário
+    if dados.id in fake_books_db:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Um livro com este ID já está cadastrado."
+        )
         
-    return {"mensagem": f"Acesso liberado. {current_user.username} pode cadastrar livros."}
+    # Salva os dados estruturados vindos do React no banco simulado
+    fake_books_db[dados.id] = {
+        "id": dados.id,
+        "titulo": dados.titulo,
+        "disponivel": True # Todo livro novo inicia disponível para empréstimo
+    }
+        
+    return {"mensagem": f"Livro '{dados.titulo}' cadastrado com sucesso por {current_user.username}!"}
 
 # ---------------------------------------------------------
 # ENDPOINT 3: Rota para Qualquer Usuário Logado
 # ---------------------------------------------------------
 @app.get("/perfil")
 async def ver_perfil(current_user: UserData = Depends(get_current_user)):
-    # Se o token for válido, a função Depends já injeta os dados do usuário aqui
     return {
         "mensagem": "Perfil acessado com sucesso",
         "usuario": current_user.username,
@@ -150,10 +169,14 @@ async def registrar_emprestimo(dados: EmprestimoCreate, current_user: UserData =
 # ---------------------------------------------------------
 @app.get("/emprestimos/meus", response_model=List[EmprestimoResponse])
 async def listar_meus_emprestimos(current_user: UserData = Depends(get_current_user)):
-    # Qualquer usuário logado pode acessar essa rota, mas ele SÓ vê os registros dele.
-    # Filtramos a lista comparando o username_leitor com o 'sub' extraído do token (current_user.username)
     meus_emprestimos = [
         emp for emp in fake_emprestimos_db if emp["username_leitor"] == current_user.username
     ]
-    
     return meus_emprestimos
+
+# ---------------------------------------------------------
+# LISTAGEM GERAL DE LIVROS
+# ---------------------------------------------------------
+@app.get("/livros")
+async def listar_livros():
+    return list(fake_books_db.values())

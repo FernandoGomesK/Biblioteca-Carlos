@@ -1,14 +1,11 @@
 
-import Header from '../components/LandingPage/LandingPageHeader';
-import Footer from '../components/LandingPage/LandingPageFooter';
-
+import Main from '../components/InitialPage/MainInitial';
 
 function HomePage() {
 
     return (
         <>
-        <Header />
-        <Footer />
+        <Main />
         </>
     );
 
