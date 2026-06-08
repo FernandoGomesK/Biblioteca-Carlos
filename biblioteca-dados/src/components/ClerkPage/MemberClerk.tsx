@@ -1,5 +1,7 @@
 import { useState, useEffect } from 'react';
 import MenuItem from '../MenuItem';
+import AddMemberModal from './addMemberModal';
+import { useMembers } from '../../hooks/useMembers'; // Importa o novo hook
 
 interface Membro {
     username: string;
@@ -9,6 +11,7 @@ interface Membro {
 function MemberClerk() {
     const [membros, setMembros] = useState<Membro[]>([]);
     const [loading, setLoading] = useState(true);
+    const [isAddMemberModalOpen, setIsAddMemberModalOpen] = useState(false);
 
     const carregarMembros = async () => {
         try {
@@ -28,6 +31,15 @@ function MemberClerk() {
         }
     };
 
+    // Injeta a lógica do hook passando o que ele deve fazer ao gravar com sucesso
+    const {
+        usernameInput,
+        setUsernameInput,
+        roleInput,
+        setRoleInput,
+        adicionarMembro
+    } = useMembers(carregarMembros, () => setIsAddMemberModalOpen(false));
+
     useEffect(() => {
         // eslint-disable-next-line react-hooks/set-state-in-effect
         carregarMembros();
@@ -35,7 +47,7 @@ function MemberClerk() {
 
     return (
         <div className='flex flex-1 h-full'>
-            
+            {/* Menu Lateral */}
             <div className='flex flex-col space-y-4 border-r border-gray-600 pr-8 w-25 shrink-0 pl-4 mr-10'>
                 <MenuItem direction="/seebooks" label="Todos os Livros" />
                 <MenuItem direction='/members' label='Membros' />
@@ -43,19 +55,16 @@ function MemberClerk() {
                 <MenuItem direction="/login" label="Logout" /> 
             </div>
 
-            
+            {/* Conteúdo Central */}
             <div className='flex flex-1 flex-col p-6'>
-                
-            
                 <div className="flex flex-row justify-between items-center w-full mb-6">
                     <div>
                         <h2 className="text-2xl font-bold">Gerenciamento de Membros</h2>
                         <p className="text-gray-400 text-sm">Lista de leitores ativos cadastrados no sistema.</p>
                     </div>
                     <div>
-                        
                         <button 
-                            onClick={() => alert("Em breve: Criaremos o modal de cadastrar membro!")}
+                            onClick={() => setIsAddMemberModalOpen(true)}
                             className="px-4 py-2 rounded text-sm font-semibold bg-blue-600 text-white hover:bg-blue-700 transition"
                         >
                             + Adicionar Membro
@@ -93,6 +102,17 @@ function MemberClerk() {
                     )}
                 </div>
             </div>
+
+            {/* 🚨 CONECTADO: Agora o Modal recebe as propriedades dinâmicas e o estado do Hook! */}
+            <AddMemberModal 
+                isOpen={isAddMemberModalOpen} 
+                onClose={() => setIsAddMemberModalOpen(false)} 
+                usernameInput={usernameInput} 
+                setUsernameInput={setUsernameInput} 
+                roleInput={roleInput} 
+                setRoleInput={setRoleInput} 
+                adicionarMembro={adicionarMembro} 
+            />
         </div>
     );
 }
