@@ -3,10 +3,15 @@ import MenuItem from '../MenuItem';
 import SearchBook from './searchBook';
 import { useState } from 'react';
 import AddBookModal from './addBookModal';
+import LendBookModal from './lendBookModal';
 
 function MainClerk() {
-    // Injeta a lógica inteira de controlo de livros numa linha
+    
     const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
+    const [isLoanModalOpen, setIsLoanModalOpen] = useState<boolean>(false);
+
+    const [selectedBookId, setSelectedBookId] = useState<number | null>(null);
+    
     const {
         livros,
         idInput,
@@ -26,6 +31,11 @@ function MainClerk() {
     const handleAddBookSubmit = async (e: React.FormEvent) => {
         await adicionarLivro(e);
         
+    };
+
+    const handleOpenLoanModal = (bookId: number) => {
+        setSelectedBookId(bookId); 
+        setIsLoanModalOpen(true);  
     };
 
     
@@ -71,11 +81,21 @@ function MainClerk() {
                                             </p>
                                         </div>
                                         
-                                        <div>
+                                        <div className='flex flex-row gap-2'>
                                             <span className={`px-2 py-1 rounded text-xs font-semibold ${livro.disponivel ? "bg-green-900/50 text-green-400 border border-green-700" : "bg-red-900/50 text-red-400 border border-red-700"}`}>
                                                 {livro.disponivel ? "Disponível" : "Emprestado"}
                                             </span>
-                                            <button>Registrar Empréstimo</button>
+                                            <button 
+                                                disabled={!livro.disponivel}
+                                                onClick={() => handleOpenLoanModal(livro.id)}
+                                                className={`px-3 py-1 rounded text-sm font-medium transition ${
+                                                    livro.disponivel 
+                                                        ? "bg-blue-600 text-white hover:bg-blue-700" 
+                                                        : "bg-gray-700 text-gray-500 cursor-not-allowed"
+                                                }`}
+                                            >
+                                                Registrar Empréstimo
+                                            </button>
                                         </div>
                                     </li>
                                 ))}
@@ -100,6 +120,13 @@ function MainClerk() {
                 categoriaInput={categoriaInput}
                 setCategoriaInput={setCategoriaInput}
                 adicionarLivro={handleAddBookSubmit} 
+            />
+
+            <LendBookModal 
+                isOpen={isLoanModalOpen} 
+                onClose={() => setIsLoanModalOpen(false)} 
+                bookId={selectedBookId}
+                onSuccess={recarregarListaManual}
             />
         </div>
     );
