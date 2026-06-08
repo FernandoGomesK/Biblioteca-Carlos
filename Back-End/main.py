@@ -36,9 +36,30 @@ fake_db = {
 
 # Banco de dados simulado de livros
 fake_books_db = {
-    1: {"id": 1, "titulo": "O Senhor dos Anéis", "disponivel": True},
-    2: {"id": 2, "titulo": "Cálculo I", "disponivel": True},
-    3: {"id": 3, "titulo": "Python Fluente", "disponivel": True}
+    1: {
+        "id": 1, 
+        "titulo": "O Senhor dos Anéis", 
+        "autor": "J.R.R. Tolkien", 
+        "ano": 1954, 
+        "categoria": "Fantasia", 
+        "disponivel": True
+    },
+    2: {
+        "id": 2, 
+        "titulo": "Cálculo I", 
+        "autor": "James Stewart", 
+        "ano": 2001, 
+        "categoria": "Exatas", 
+        "disponivel": True
+    },
+    3: {
+        "id": 3, 
+        "titulo": "Python Fluente", 
+        "autor": "Luciano Ramalho", 
+        "ano": 2015, 
+        "categoria": "Tecnologia", 
+        "disponivel": True
+    }
 }
 
 # Lista que guardará os históricos de empréstimos
@@ -72,7 +93,10 @@ async def login(form_data: OAuth2PasswordRequestForm = Depends()):
 # Modelo para receber e validar os dados enviados pelo corpo (JSON) da requisição
 class LivroCreate(BaseModel):
     id: int
-    titulo: str # Corrigido de 'string' para 'str'
+    titulo: str
+    autor: str
+    ano: int
+    categoria: str
 
 @app.post("/livros/cadastrar")
 async def cadastrar_livro(dados: LivroCreate, current_user: UserData = Depends(get_current_user)):
@@ -94,6 +118,9 @@ async def cadastrar_livro(dados: LivroCreate, current_user: UserData = Depends(g
     fake_books_db[dados.id] = {
         "id": dados.id,
         "titulo": dados.titulo,
+        "autor": dados.autor,
+        "ano": dados.ano,
+        "categoria": dados.categoria,
         "disponivel": True # Todo livro novo inicia disponível para empréstimo
     }
         
