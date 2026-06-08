@@ -15,7 +15,7 @@ export function useLogin() {
             localStorage.setItem('token', dados.access_token);
             
             if (accountType === "Clerk") {
-                navigate('/app/see-books');
+                navigate('/seebooks');
             } else {
                 navigate('/user-dashboard');
             }

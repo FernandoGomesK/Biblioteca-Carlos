@@ -13,3 +13,12 @@ React Vite + Tailwind
 
 instalação do vite
 instalação do tailwind
+
+instalação Back-End
+
+py -m pip install fastapi python-jose[cryptography] passlib uvicorn watchfiles "bcrypt==4.0.1"
+
+execução Back-End
+
+cd Back-End
+py -m uvicorn main:app --reload --app-dir Back-End

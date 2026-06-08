@@ -24,6 +24,7 @@ function App() {
         <Route element={<PageLayout />}>
           <Route path="/" element={<HomePage />} />
           <Route path="/login" element={<LoginPage />} />
+          <Route path="/seebooks" element={<SeeBooks />} /> 
         </Route>
 
         {/* Rota exclusiva e avulsa para a Área do Usuário Comum/Leitor */}
@@ -32,7 +33,7 @@ function App() {
         {/* Rotas do Sistema Administrativo (Compartilham a Navbar e o Menu Lateral) */}
         <Route path="/app" element={<ClerkBase />}>
           {/* Rota padrão ao acessar "/app" */}
-          <Route index element={<SeeBooks />} /> 
+          
           
           {/* Sub-rotas do painel */}
           <Route path="see-books" element={<SeeBooks />} />

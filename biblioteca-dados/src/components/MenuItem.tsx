@@ -8,7 +8,7 @@ interface MenuItemProps {
 
 function MenuItem({ direction, label }: MenuItemProps) {
     return (
-        <NavLink to={direction} className="text-gray-300 hover:text-white transition-colors duration-200">
+        <NavLink to={direction} className=" hover:text-white transition-colors duration-200">
             {label}
         </NavLink>
     );
