@@ -1,4 +1,4 @@
-import MainClerk from '../components/ClerkPage/MainClerk';
+import MainClerk from '../components/ClerkPage/MemberClerk';
 
 export default function SeeMembers() {
     return (
