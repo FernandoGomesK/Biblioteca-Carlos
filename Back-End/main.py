@@ -207,3 +207,28 @@ async def listar_meus_emprestimos(current_user: UserData = Depends(get_current_u
 @app.get("/livros")
 async def listar_livros():
     return list(fake_books_db.values())
+
+# ---------------------------------------------------------
+# Buscar livro por título ou autor
+# ---------------------------------------------------------
+
+@app.get("/livros/buscar")
+async def buscar_livros(query: str):
+    resultados = [
+        livro for livro in fake_books_db.values()
+        if query.lower() in livro["titulo"].lower() or query.lower() in livro["autor"].lower()
+    ]
+    return resultados
+
+# ---------------------------------------------------------
+# Ordenar o acervo por título (A–Z ou Z–A)
+# ---------------------------------------------------------
+
+@app.get("/livros/ordenar")
+async def ordenar_livros(ordem: str = "asc"):
+    livros = list(fake_books_db.values())
+    if ordem == "desc":
+        livros.sort(key=lambda x: x["titulo"], reverse=True)
+    else:
+        livros.sort(key=lambda x: x["titulo"])
+    return livros
