@@ -1,8 +1,10 @@
 import { useState, useEffect } from 'react';
 import MenuItem from '../components/MenuItem';
 
+// Atualizado para refletir o schema EmprestimoResponse do backend
 interface Emprestimo {
-    id: int;
+    id: number; // Corrigido de 'int' (inválido no TS) para 'number'
+    username_leitor: string;
     id_livro: number;
     titulo_livro: string;
     data_emprestimo: string;
@@ -15,17 +17,26 @@ export default function UserDashboard() {
 
     const carregarHistoricoLeitor = async () => {
         try {
-            // Chamada para a rota @app.get("/emprestimos/meus")
-            // const resposta = await api.get('/emprestimos/meus');
-            // setMeusEmprestimos(resposta.data);
-            
-            // Dados mocados para simular o retorno da Lista Encadeada do Python:
-            setMeusEmprestimos([
-                { id: 1, id_livro: 2, titulo_livro: "Cálculo I", data_emprestimo: "2026-06-01", data_devolucao: "2026-06-15", status: "ativo" },
-                { id: 2, id_livro: 3, titulo_livro: "Python Fluente", data_emprestimo: "2026-05-10", data_devolucao: "2026-05-24", status: "devolvido" }
-            ]);
+            // Supondo que você salve o token no localStorage durante o login
+            const token = localStorage.getItem('access_token'); 
+
+            // Chamada real para a API FastAPI
+            const resposta = await fetch('http://localhost:8000/emprestimos/meus', {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}` // Necessário para passar na validação do get_current_user
+                }
+            });
+
+            if (resposta.ok) {
+                const dados = await resposta.json();
+                setMeusEmprestimos(dados); // Atualiza o estado com a lista vinda do banco (ou fake_db)
+            } else {
+                console.error("Erro ao buscar histórico do usuário. Status:", resposta.status);
+            }
         } catch (erro) {
-            console.error("Erro ao buscar histórico do usuário:", erro);
+            console.error("Erro na requisição ao buscar histórico do usuário:", erro);
         }
     };
 
@@ -54,7 +65,6 @@ export default function UserDashboard() {
                     <p>Você não possui nenhum empréstimo no seu histórico.</p>
                 )}
             </section>
-
             <br />
             <MenuItem direction="/" label="Sair / Voltar para Home" />
         </div>

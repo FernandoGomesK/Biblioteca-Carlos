@@ -1,4 +1,4 @@
-import { useState, useEffect,  } from 'react';
+import { useState, useEffect } from 'react';
 import type { FormEvent } from 'react';
 
 interface Livro {
@@ -10,7 +10,8 @@ interface Livro {
     disponivel: boolean;
 }
 
-export function useBooks() {
+// 1. O hook agora recebe a 'ordem' como parâmetro, com o padrão 'asc'
+export function useBooks(ordem: string = 'asc') {
     const [livros, setLivros] = useState<Livro[]>([]);
     const [idInput, setIdInput] = useState('');
     const [tituloInput, setTituloInput] = useState('');
@@ -18,13 +19,13 @@ export function useBooks() {
     const [anoInput, setAnoInput] = useState('');
     const [categoriaInput, setCategoriaInput] = useState('');
     
-
-    // 1. Carregar livros iniciais (antigo seeBooks.tsx)
+    
     useEffect(() => {
         const carregarLivrosIniciais = async () => {
             try {
                 const token = localStorage.getItem('token'); 
-                const resposta = await fetch('http://127.0.0.1:8000/livros', {
+                
+                const resposta = await fetch(`http://127.0.0.1:8000/livros/ordenar?ordem=${ordem}`, {
                     method: 'GET',
                     headers: { 'Authorization': `Bearer ${token}` }
                 });
@@ -42,13 +43,14 @@ export function useBooks() {
             }
         };
         carregarLivrosIniciais();
-    }, []);
+    }, [ordem]);
 
-    // 2. Recarregar lista (antigo reloadList.tsx)
+    
     const recarregarListaManual = async () => {
         try {
             const token = localStorage.getItem('token'); 
-            const resposta = await fetch('http://127.0.0.1:8000/livros', {
+            
+            const resposta = await fetch(`http://127.0.0.1:8000/livros/ordenar?ordem=${ordem}`, {
                 method: 'GET',
                 headers: { 'Authorization': `Bearer ${token}` }
             });
@@ -61,7 +63,7 @@ export function useBooks() {
         }
     };
 
-    // 3. Adicionar Livro (antigo addBooks.tsx)
+    
     const adicionarLivro = async (e: FormEvent) => {
         e.preventDefault();
 
@@ -102,14 +104,14 @@ export function useBooks() {
             setAutorInput('');
             setAnoInput('');
             setCategoriaInput('');
-            recarregarListaManual();
+            recarregarListaManual(); 
         } catch (erro) {
             console.error(erro);
             alert("Erro ao enviar. Certifique-se de que o backend está rodando.");
         }
     };
 
-    // Devolvemos o estado e as funções para o componente usar
+    
     return {
         livros,
         idInput,
